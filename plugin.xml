@@ -20,15 +20,15 @@
   </engines>
 
   <!-- js module-->
-  <js-module src="www/vwcap.js" name="vwcap">
-    <clobbers target="VWCapture" />
+  <js-module src="www/wvcap.js" name="wvcap">
+    <clobbers target="WVCapture" />
   </js-module>
 
   <!-- ios -->
   <platform name="ios">
     <config-file target="config.xml" parent="/*">
-        <feature name="VWCapture">
-         <param name="ios-package" value="VWCapture"/>
+        <feature name="WVCapture">
+         <param name="ios-package" value="WVCapture"/>
        </feature>
      </config-file>
 
