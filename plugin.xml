@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  id="org.lx.miloliu.webview.capture"
+  version="1.0">
+
+  <name>WVCapture</name>
+  <description>Cordova Webview Capture Plugin</description>
+  <license>MIT</license>
+  <keywords>cordova,webview,capture</keywords>
+  <repo>https://github.com/miloliu/cordova-plugin-webview-capture</repo>
+  <issue>https://github.com/miloliu/cordova-plugin-webview-capture/issues</issue>
+  
+  
+  <!--require cordova version -->
+  <engines>
+    <engine name="cordova" version=">=3.5.0" />
+     <engine name="cordova-android" version=">=4.0.0-dev" />
+  </engines>
+
+  <!-- js module-->
+  <js-module src="www/vwcap.js" name="vwcap">
+    <clobbers target="VWCapture" />
+  </js-module>
+
+  <!-- ios -->
+  <platform name="ios">
+    <config-file target="config.xml" parent="/*">
+        <feature name="VWCapture">
+         <param name="ios-package" value="VWCapture"/>
+       </feature>
+     </config-file>
+
+    <header-file src="src/ios/WVCapture.h"/>
+    <source-file src="src/ios/WVCapture.m"/>
+    <!--required frameworks for qq sdk-->
+    <framework src="CoreGraphics.framework" />
+    <framework src="CoreTelephony.framework" />
+    <framework src="SystemConfiguration.framework" />
+    <framework src="Security.framework" />
+    <framework src="libiconv.dylib" />
+    <framework src="libsqlite3.dylib" />
+    <framework src="libstdc++.dylib" />
+    <framework src="libz.dylib" />
+
+    <info>
+      Successfully add webview capture
+    </info>
+  </platform>
+    
+  <!-- android -->
+  <platform name="android">
+    <hook type="before_plugin_install" src="scripts/android/android-hook.js" />
+    <config-file target="res/xml/config.xml" parent="/*">
+      <feature name="WVCapture" >
+        <param name="android-package" value="org.lx.milo.webview.capture.WVCapture"/>
+      </feature>  
+    </config-file>
+  <!--permission for  SDK -->
+  <config-file target="AndroidManifest.xml" parent="/manifest">
+      <uses-permission android:name="android.permission.INTERNET" />
+      <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> 
+    </config-file>
+
+  <source-file src="src/android/VWCapture.java" target-dir="src/org/lx/miloliu/webview/capture" />
+  <source-file src="src/android/android-support-v4.jar" target-dir="libs/" />
+  </platform>
+</plugin>
