@@ -63,7 +63,7 @@
       <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> 
     </config-file>
 
-  <source-file src="src/android/VWCapture.java" target-dir="src/org/lx/miloliu/webview/capture" />
+  <source-file src="src/android/WVCapture.java" target-dir="src/org/lx/miloliu/webview/capture" />
   <source-file src="src/android/android-support-v4.jar" target-dir="libs/" />
   </platform>
 </plugin>
