@@ -54,7 +54,7 @@
     <hook type="before_plugin_install" src="scripts/android/android-hook.js" />
     <config-file target="res/xml/config.xml" parent="/*">
       <feature name="WVCapture" >
-        <param name="android-package" value="org.lx.milo.webview.capture.WVCapture"/>
+        <param name="android-package" value="org.lx.miloliu.webview.capture.WVCapture"/>
       </feature>  
     </config-file>
   <!--permission for  SDK -->
