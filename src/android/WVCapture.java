@@ -16,13 +16,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 public class WVCapture extends CordovaPlugin {
     private CordovaWebView _webView;
+    private CordovaInterface _interface;
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
         _webView = webView;
+        _interface = cordova;
     }
 
     @Override
@@ -45,37 +48,55 @@ public class WVCapture extends CordovaPlugin {
         return false;
     }
 
-    protected void capture(JSONArray args, CallbackContext callbackContext) {
+    protected void capture(JSONArray args, final CallbackContext callbackContext) {
         PluginResult result = null;
         if (_webView != null) {
-            View view = _webView.getView();
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    View view = _webView.getView();
 
-            Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(bitmap);
-            view.draw(canvas);
+                    Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
+                    Canvas canvas = new Canvas(bitmap);
+                    view.draw(canvas);
 
-            ByteArrayOutputStream stream = new ByteArrayOutputStream(bitmap.getByteCount());
-            Base64OutputStream base64OutputStream = new Base64OutputStream(stream, Base64.DEFAULT);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 80, base64OutputStream);
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream(bitmap.getByteCount());
+                    Base64OutputStream base64OutputStream = new Base64OutputStream(stream, Base64.DEFAULT);
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 80, base64OutputStream);
 
-            bitmap.recycle();
+                    bitmap.recycle();
 
-            String pngStr = new String(stream.toByteArray());
+                    String pngStr = new String(stream.toByteArray());
 
-            JSONObject object = new JSONObject();
-            try {
-                object.put("pngStr", pngStr);
-                result = new PluginResult(PluginResult.Status.OK, object);
-            } catch (JSONException e) {
-                e.printStackTrace();
-                result = new PluginResult(PluginResult.Status.ERROR);
-            }
+                    JSONObject object = new JSONObject();
+                    PluginResult result;
+                    try {
+                        object.put("pngStr", pngStr);
+                        result = new PluginResult(PluginResult.Status.OK, object);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        result = new PluginResult(PluginResult.Status.ERROR);
+                    }
+                    finally {
+                        try {
+                            stream.close();
+                            base64OutputStream.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    _webView.sendPluginResult(result, callbackContext.getCallbackId());
+                }
+            };
+            _interface.getActivity().runOnUiThread(runnable);
+
         }
         else {
             result = new PluginResult(PluginResult.Status.ERROR);
+            callbackContext.sendPluginResult(result);
         }
 
-        callbackContext.sendPluginResult(result);
+
 
     }
 }
