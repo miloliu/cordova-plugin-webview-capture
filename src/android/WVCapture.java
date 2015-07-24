@@ -24,6 +24,8 @@ public class WVCapture extends CordovaPlugin {
     private CordovaWebView _webView;
     private CordovaInterface _interface;
 
+    private static final int THUMB_SIZE = 150;
+
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
@@ -75,17 +77,24 @@ public class WVCapture extends CordovaPlugin {
                     }
 
                     ByteArrayOutputStream stream = new ByteArrayOutputStream(bitmap.getByteCount());
-                    Base64OutputStream base64OutputStream = new Base64OutputStream(stream, Base64.DEFAULT);
+                    Base64OutputStream base64OutputStream = new Base64OutputStream(stream, Base64.NO_WRAP);
                     bitmap.compress(Bitmap.CompressFormat.PNG, 80, base64OutputStream);
+
+                    Bitmap thumbnail = Bitmap.createScaledBitmap(bitmap, THUMB_SIZE, THUMB_SIZE, true);
+                    ByteArrayOutputStream thumbStream = new ByteArrayOutputStream(thumbnail.getByteCount());
+                    Base64OutputStream thumbBase64OutputStream = new Base64OutputStream(thumbStream, Base64.NO_WRAP);
+                    thumbnail.compress(Bitmap.CompressFormat.PNG, 100, thumbBase64OutputStream);
 
                     //bitmap.recycle();
 
                     String pngStr = new String(stream.toByteArray());
+                    String pngThumbStr = new String(thumbStream.toByteArray());
 
                     JSONObject object = new JSONObject();
                     PluginResult result;
                     try {
                         object.put("pngStr", pngStr);
+                        object.put("pngThumbStr", pngThumbStr);
                         result = new PluginResult(PluginResult.Status.OK, object);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -93,7 +102,9 @@ public class WVCapture extends CordovaPlugin {
                     } finally {
                         try {
                             stream.close();
+                            thumbStream.close();
                             base64OutputStream.close();
+                            thumbBase64OutputStream.close();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
